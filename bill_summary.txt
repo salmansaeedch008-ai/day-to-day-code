@@ -1,0 +1,40 @@
+======= BILL SUMMARY =======
+Customer Name :  saeed
+Bill Number   : 2461
+Date & Time   : Thu Dec 18 23:10:00 2025
+---------------------------------------
+Product        Price     Qty       Total
+---------------------------------------
+3              3         3         9
+33             3         3         9
+33             3         3         9
+
+Total Bill : 27
+Discount   : 0
+Tax        : 1.35
+Sub Total  : 28.35
+
+======= END OF BILL =======
+
+--------------------------------------
+
+======= BILL SUMMARY =======
+Customer Name : salman saeed
+Bill Number   : 3496
+Date & Time   : Thu Dec 18 23:15:17 2025
+---------------------------------------
+Product        Price     Qty       Total
+---------------------------------------
+3              3         3         9
+3              3         3         9
+3              3         3         9
+
+Total Bill : 27
+Discount   : 0
+Tax        : 1.35
+Sub Total  : 28.35
+
+======= END OF BILL =======
+
+--------------------------------------
+
