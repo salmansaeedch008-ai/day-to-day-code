@@ -38,3 +38,83 @@ Sub Total  : 28.35
 
 --------------------------------------
 
+======= BILL SUMMARY =======
+Customer Name : salman ssaed
+Bill Number   : 1250
+Date & Time   : Fri Dec 19 14:56:13 2025
+---------------------------------------
+Product        Price     Qty       Total
+---------------------------------------
+3              3         3         9
+3              3         3         9
+3              3         3         9
+
+Total Bill : 27
+Discount   : 0
+Tax        : 1.35
+Sub Total  : 28.35
+
+======= END OF BILL =======
+
+--------------------------------------
+
+======= BILL SUMMARY =======
+Customer Name : salman saed
+Bill Number   : 1658
+Date & Time   : Fri Dec 19 14:58:18 2025
+---------------------------------------
+Product        Price     Qty       Total
+---------------------------------------
+3              3         3         9
+3              3         3         9
+3              3         3         9
+
+Total Bill : 27
+Discount   : 0
+Tax        : 1.35
+Sub Total  : 28.35
+
+======= END OF BILL =======
+
+--------------------------------------
+
+======= BILL SUMMARY =======
+Customer Name : salman saeed
+Bill Number   : 1789
+Date & Time   : Fri Dec 19 14:58:58 2025
+---------------------------------------
+Product        Price     Qty       Total
+---------------------------------------
+3              3         3         9
+3              3         3         9
+3              3         3         9
+
+Total Bill : 27
+Discount   : 0
+Tax        : 1.35
+Sub Total  : 28.35
+
+======= END OF BILL =======
+
+--------------------------------------
+
+======= BILL SUMMARY =======
+Customer Name : salman saeed
+Bill Number   : 3154
+Date & Time   : Fri Dec 19 15:05:56 2025
+---------------------------------------
+Product        Price     Qty       Total
+---------------------------------------
+3              3         33        99
+3              3         3         9
+3              3         3         9
+
+Total Bill : 117
+Discount   : 0
+Tax        : 5.85
+Sub Total  : 122.85
+
+======= END OF BILL =======
+
+--------------------------------------
+

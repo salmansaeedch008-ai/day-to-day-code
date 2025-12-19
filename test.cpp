@@ -17,6 +17,8 @@ using namespace std;
 #define CYAN    "\033[36m"
 #define WHITE   "\033[37m"
 
+int choice;
+
 double calculate_total(double price[], int quantity[], int n) {
     double total = 0;
     for (int i = 0; i < n; i++) {
@@ -27,7 +29,6 @@ double calculate_total(double price[], int quantity[], int n) {
 
 bool login() {
     string username, password, file_user, file_pass;
-    int choice;
 
     while (true) {
         // Updated Menu Design for Admin Focus
@@ -68,7 +69,7 @@ bool login() {
 
                 if (found) {
                     // --- SHOW DASHBOARD ENTRY ---
-                    cout << GREEN << "\nAccess Granted. Verifying credentials..." << RESET << endl;
+                    cout << GREEN << "\n Verifying credentials...Access Granted. " << RESET << endl<<endl;
                     cout << BLUE << "========================================" << RESET << endl;
                     cout << GREEN << "      WELCOME TO ADMIN DASHBOARD        " << RESET << endl;
                     cout << BLUE << "========================================" << RESET << endl << endl;
@@ -178,10 +179,14 @@ void save_and_print_summary(string customer_name, int bill_number, char *dt, str
 
 
 int main(){
-
+    do{
     if (!login()) { 
         return 0;     
     }
+
+    cout<<GREEN<<"======================================="<<RESET<<endl;
+    cout<<BLUE<<"=============BILLING MODE=============="<<RESET<<endl;
+    cout<<YELLOW<<"======================================="<<RESET<<endl<<endl;
     cin.ignore();
     string customer_name;
     cout << CYAN << "Enter Customer Name : " << RESET;   //input customer name
@@ -347,7 +352,7 @@ int main(){
 
     cout << GREEN << "\n\nThank you for shopping " << customer_name << " !" << RESET << endl;
 
-
+    }while(choice!=3);
     return 0;
 }
 
