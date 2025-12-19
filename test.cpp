@@ -17,13 +17,13 @@ using namespace std;
 #define CYAN    "\033[36m"
 #define WHITE   "\033[37m"
 
-int choice;
+int choice;          //using global so we can also use it in main
 
 double calculate_total(double price[], int quantity[], int n) {
     double total = 0;
     for (int i = 0; i < n; i++) {
         total += price[i] * quantity[i];
-    }
+    }                       //this function will add all the prices of all the products with respect to quantity and will return total price
     return total;
 }
 
@@ -258,7 +258,7 @@ int main(){
     for (int i = 0; i < total_number_of_products; i++) {
         cout << left
              << WHITE << setw(16) << products[i]
-             << setw(12) << price[i]
+             << setw(12) << price[i]                                        //writes products price and quantity
              << setw(10) << quantity[i]
              << GREEN << price[i] * quantity[i] << " Rs." << RESET << endl;
 
@@ -266,28 +266,28 @@ int main(){
     }
 
     double total_bill = calculate_total(price, quantity, total_number_of_products);
-    cout << CYAN << "\n              Total Bill : " << GREEN << total_bill << " Rs." << RESET << endl;
+    cout << CYAN << "\n              Total Bill : " << GREEN << total_bill << " Rs." << RESET << endl;         //calling the function total bill
 
     double discount = 0;
     if (total_bill > 1000) {
-        discount = 0.10 * total_bill;
+        discount = 0.10 * total_bill;                //if total bill will be greater than 1000 then giving 10 percent discount
         cout << CYAN << "                Discount : " << GREEN << discount << " Rs." << RESET << endl;
     }
 
-    double tax = (0.05 * total_bill);
+    double tax = (0.05 * total_bill);               //adding 5 percent discount
     cout << CYAN << "                     Tax : " << GREEN << tax << " Rs." << RESET << endl << endl;
 
     cout << BLUE << "--------------------------------------------------" << RESET << endl << endl;
 
     float sub_total = ((total_bill - discount) + tax);
-    cout << CYAN << "               Sub Total : " << GREEN << sub_total << " Rs." << RESET << endl << endl;
+    cout << CYAN << "               Sub Total : " << GREEN << sub_total << " Rs." << RESET << endl << endl;       //subtotal bill after tax and discount
 
     cout << BLUE << "--------------------------------------------------" << RESET << endl << endl;
 
     int choice;
     double recieved_cash, remaining_amount;
-
-    cout << MAGENTA << "Payment Methods : " << RESET << endl << endl;
+                                                                             
+    cout << MAGENTA << "Payment Methods : " << RESET << endl << endl;       //payment options
     cout << "     " << CYAN << "1-Jazzcash" << RESET << endl;
     cout << "     " << CYAN << "2-Bank Credit Card" << RESET << endl;
     cout << "     " << CYAN << "3-Easypaisa" << RESET << endl;
@@ -297,7 +297,7 @@ int main(){
 
     do {
         cin >> choice;
-        switch (choice) {
+        switch (choice) {      //payment choice
         case 1:
             cout << GREEN << "Selected Method : JazzCash. Processing payment..." << endl;
             cout << "Payment Successful" << RESET << endl;
@@ -319,11 +319,11 @@ int main(){
 
             remaining_amount = sub_total;
 
-            while (remaining_amount > 0) {
+            while (remaining_amount > 0) {     //exception handling
                 cout << CYAN << "Enter Cash Received : " << RESET;
                 cin >> recieved_cash;
 
-                if (recieved_cash <= 0) {
+                if (recieved_cash <= 0) {   //if cash received less than total bill
                     cout << RED << "Invalid amount! Enter again." << RESET << endl;
                     continue;
                 }
@@ -347,12 +347,12 @@ int main(){
         }
     } while (choice > 4 || choice < 1);
 
-    save_and_print_summary(customer_name, bill_number, dt, products, price, quantity,  total_number_of_products,  total_bill, discount, tax, sub_total);
+    save_and_print_summary(customer_name, bill_number, dt, products, price, quantity,  total_number_of_products,  total_bill, discount, tax, sub_total);  //calling the funtion of the summary
     
 
     cout << GREEN << "\n\nThank you for shopping " << customer_name << " !" << RESET << endl;
 
-    }while(choice!=3);
+    }while(choice!=3);       //program will continously run until the user enters 3 which is exit the program
     return 0;
 }
 
