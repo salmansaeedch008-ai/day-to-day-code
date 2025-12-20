@@ -110,7 +110,7 @@ int main(){
     }
     for(int i=0 ; i<total_seats ; i++){
         if(seats[i]==1){
-            my_file<<seats[i]<<" ";
+            my_file<<i+1<<" ";
         }
     }
 
