@@ -68,6 +68,9 @@ int main(){
                     cout<<"attendance marked successfully";
                 }
             }
+            else{
+                cout<<"enter valid attendance.";
+            }
             break;
 
             case 2:
