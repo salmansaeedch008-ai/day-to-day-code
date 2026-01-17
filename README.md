@@ -1,2 +1,4 @@
 # day-to-day-code
-Here are all the codes that i learn from basics .
+This repository is my daily coding journey where I practice and improve my Python and C++ programming language
+<br>
+Author name : Muhammad Salman Saeed
