@@ -1,22 +1,37 @@
 #include <iostream>
 using namespace std;
 
-int sumDiv(int n, int d) {
-    if (d == n) return 0;
-    if (n % d == 0) return d + sumDiv(n, d + 1);
-    return sumDiv(n, d + 1);
+// helper (task2_1)
+int calculateDivisorsSum(int number, int divisor = 1) {
+    // Stop when divisor reaches number itself
+    if (divisor == number) return 0;
+
+    // Add divisor if it divides number
+    if (number % divisor == 0) {
+        return divisor + calculateDivisorsSum(number, divisor + 1);
+    }
+
+    // Otherwise move to next divisor
+    return calculateDivisorsSum(number, divisor + 1);
 }
 
-// Prototype: bool isperfectNumber(int n);
+// task2_1
 bool isperfectNumber(int n) {
+    // Perfect numbers are > 1
     if (n <= 1) return false;
-    return sumDiv(n, 1) == n;
+
+    return (calculateDivisorsSum(n, 1) == n);
 }
 
 int main() {
     int n;
-    cout << "Enter n: ";
+    cout << "Enter a number: ";
     cin >> n;
-    cout << (isperfectNumber(n) ? "true" : "false") << "\n";
+
+    if (isperfectNumber(n))
+        cout << n << " is a perfect number." << endl;
+    else
+        cout << n << " is not a perfect number." << endl;
+
     return 0;
 }

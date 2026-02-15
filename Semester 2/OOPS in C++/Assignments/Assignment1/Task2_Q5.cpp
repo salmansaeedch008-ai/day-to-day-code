@@ -1,56 +1,78 @@
 #include <iostream>
 using namespace std;
 
-void printN(char ch, int n) {
-    if (n <= 0) return;
-    cout << ch;
-    printN(ch, n - 1);
-}
-
-void lineHollow(int leftStars, int innerSpaces) {
-    printN('*', leftStars);
-    if (innerSpaces > 0) printN(' ', innerSpaces);
-    printN('*', leftStars);
-    cout << "\n";
-}
-
-void up(int n, int i) {
-    if (i == n) return;
-    if (i == 0) {
-        printN('*', 2 * n - 1);
-        cout << "\n";
-    } else {
-        int left = n - i;
-        int spaces = 2 * i - 1;
-        lineHollow(left, spaces);
+// helper1(task2_5)
+void printAsterisks(int totalAsterisks, int currentAsterisks)
+{
+    // Base case: stop when both become equal
+    if (totalAsterisks == currentAsterisks)
+    {
+        return;
     }
-    up(n, i + 1);
+
+    // Recursive call first (so stars print in correct order)
+    printAsterisks(totalAsterisks - 1, currentAsterisks);
+    cout << " *";
 }
 
-void down(int n, int i) {
-    if (i < 0) return;
-    if (i == 0) {
-        printN('*', 2 * n - 1);
-        cout << "\n";
-    } else {
-        int left = n - i;
-        int spaces = 2 * i - 1;
-        lineHollow(left, spaces);
+// helper2(task2_5)
+void printSpaces(int totalSpaces)
+{
+    // Base case: no spaces left
+    if (totalSpaces == 0)
+    {
+        return;
     }
-    down(n, i - 1);
+
+    // Recursive call
+    printSpaces(totalSpaces - 1);
+    cout << "  ";
 }
 
-// Prototype: void printHollowDiamond(int n);
-void printHollowDiamond(int n) {
-    if (n <= 0) return;
-    up(n, 0);
-    down(n, n - 2);
+// helper3(task2_5)
+void printRow(int n, int currentRow)
+{
+    // Base case
+    if (currentRow == 0)
+    {
+        return;
+    }
+
+    // Process previous row first
+    printRow(n, currentRow - 1);
+
+    // Upper half
+    if (currentRow <= n)
+    {
+        printAsterisks(n, currentRow - 1);
+        printSpaces((currentRow - 1) * 2);
+        printAsterisks(n, currentRow - 1);
+        cout << endl;
+    }
+    // Lower half
+    else
+    {
+        int adjustedRow = (2 * n) - currentRow;
+        printAsterisks(n, adjustedRow);
+        printSpaces(adjustedRow * 2);
+        printAsterisks(n, adjustedRow);
+        cout << endl;
+    }
 }
 
-int main() {
+// task2_5
+void printHollowDiamond(int n)
+{
+    printRow(n, n * 2);
+}
+
+int main()
+{
     int n;
     cout << "Enter n: ";
     cin >> n;
+
     printHollowDiamond(n);
+
     return 0;
 }

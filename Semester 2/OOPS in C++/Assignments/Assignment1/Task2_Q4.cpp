@@ -1,39 +1,41 @@
 #include <iostream>
 using namespace std;
 
-void printSpaces(int n) {
-    if (n <= 0) return;
+// helper (task2_4)
+void printSpace(int spaces) {
+    if (spaces <= 0) return;
     cout << " ";
-    printSpaces(n - 1);
+    printSpace(spaces - 1);
 }
 
-void PrintPattern1(int start, int end) {
-    if (start >= end) return;
+// task2_4
+void PrintPattern1(int start, int end)
+{
+    // Base case
+    if (start > (end - start)) return;
 
-    int spaces = end - start;
+    // Upper half (including middle)
+    printSpace(end - 2 * start);
+    cout << "*" << endl;
 
-    if (start + 1 == end) {
-        printSpaces(spaces);
+    // Recursive call
+    PrintPattern1(start + 1, end);
+
+    // Lower half (excluding middle duplicate)
+    if (end - 2 * start != 0) {
+        printSpace(end - 2 * start);
         cout << "*" << endl;
-        return;
     }
-
-    printSpaces(spaces);
-    cout << "*" << endl;
-
-    PrintPattern1(start + 1, end - 1);
-
-    printSpaces(spaces);
-    cout << "*" << endl;
 }
 
 int main() {
-    int start, end;
-    cout << "Enter start and end: ";
-    cin >> start >> end;
-    PrintPattern1(start, end);
+    int end;
+
+    cout << "Enter end value: ";
+    cin >> end;
+
+    // start is usually 0 for this pattern
+    PrintPattern1(0, end);
+
     return 0;
 }
-
-
-

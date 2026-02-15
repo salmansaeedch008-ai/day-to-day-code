@@ -1,50 +1,24 @@
 #include <iostream>
+#include <ctime>
+#include <cstdlib>
 using namespace std;
 
-/* =========================================================
-   Utility / Random (no external libraries)
-   ========================================================= */
-int nextSeed(int seed) {
-    return (seed * 1103515245 + 12345) & 0x7fffffff;
-}
+/* -------------------- Data structures -------------------- */
+struct Snake {
+    int head, tail;
+};
 
-int randInRange(int &seed, int low, int high) {
-    seed = nextSeed(seed);
-    int span = high - low + 1;
-    return low + (seed % span);
-}
+struct Ladder {
+    int bottom, top;
+};
 
+/* -------------------- Small helper functions -------------------- */
 void waitForEnter() {
     cout << "Press ENTER to roll...";
     cin.get();
 }
 
-/* =========================================================
-   Board numbering helpers (diagram style)
-   - Cell 1 at bottom-left
-   - Zig-zag each row
-   ========================================================= */
-int rowFromCell(int cell, int N) {
-    // row index from bottom (0-based)
-    return (cell - 1) / N;
-}
-
-int colFromCell(int cell, int N) {
-    int r = rowFromCell(cell, N);   // bottom-based row
-    int offset = (cell - 1) % N;
-    if (r % 2 == 0) return offset;          // left -> right
-    else return (N - 1 - offset);           // right -> left
-}
-
-int cellFromRowColBottomBased(int r, int c, int N) {
-    // inverse mapping for zig-zag board
-    if (r % 2 == 0) return r * N + c + 1;
-    else return r * N + (N - c);
-}
-
-/* =========================================================
-   Checks for used cells in snake/ladder endpoints
-   ========================================================= */
+// Check if a value already exists in any endpoint array pair
 bool usedInPairs(int a[], int b[], int count, int x) {
     for (int i = 0; i < count; i++) {
         if (a[i] == x || b[i] == x) return true;
@@ -52,6 +26,7 @@ bool usedInPairs(int a[], int b[], int count, int x) {
     return false;
 }
 
+// Make sure snake/ladder points do not overlap with each other
 bool usedEverywhere(
     int sHead[], int sTail[], int sCount,
     int lFoot[], int lTop[], int lCount,
@@ -61,77 +36,66 @@ bool usedEverywhere(
            usedInPairs(lFoot, lTop, lCount, x);
 }
 
-/* =========================================================
-   Generate snakes and ladders (dynamic arrays)
-   ========================================================= */
-void generateSnakesRec(
-    int idx, int need, int total,
-    int sHead[], int sTail[],
-    int lFoot[], int lTop[], int lCount,
-    int &seed
-) {
-    if (idx == need) return;
-
-    // snake head should be above tail
-    int head = randInRange(seed, 2, total - 1);
-    int tail = randInRange(seed, 1, head - 1);
-
-    if (head <= tail || head == total ||
-        usedEverywhere(sHead, sTail, idx, lFoot, lTop, lCount, head) ||
-        usedEverywhere(sHead, sTail, idx, lFoot, lTop, lCount, tail)) {
-        generateSnakesRec(idx, need, total, sHead, sTail, lFoot, lTop, lCount, seed);
-        return;
-    }
-
-    sHead[idx] = head;
-    sTail[idx] = tail;
-    generateSnakesRec(idx + 1, need, total, sHead, sTail, lFoot, lTop, lCount, seed);
+/* -------------------- Board mapping (zig-zag numbering) -------------------- */
+// Converts row/column (bottom-based) to cell number
+int cellFromRowColBottomBased(int r, int c, int N) {
+    if (r % 2 == 0) return r * N + c + 1;      // left to right
+    else return r * N + (N - c);               // right to left
 }
 
-void generateLaddersRec(
-    int idx, int need, int total,
-    int sHead[], int sTail[], int sCount,
-    int lFoot[], int lTop[],
-    int &seed
-) {
-    if (idx == need) return;
+/* -------------------- Generate snakes and ladders -------------------- */
+void generateSnakes(int count, int total, int sHead[], int sTail[], int lFoot[], int lTop[], int lCount) {
+    int i = 0;
+    while (i < count) {
+        int head = rand() % (total - 2) + 2;     // [2 .. total-1]
+        int tail = rand() % (head - 1) + 1;      // [1 .. head-1]
 
-    // ladder top should be above foot
-    int foot = randInRange(seed, 1, total - 2);
-    int top  = randInRange(seed, foot + 1, total - 1);
+        if (head <= tail || head == total) continue;
+        if (usedEverywhere(sHead, sTail, i, lFoot, lTop, lCount, head)) continue;
+        if (usedEverywhere(sHead, sTail, i, lFoot, lTop, lCount, tail)) continue;
 
-    if (top <= foot ||
-        usedEverywhere(sHead, sTail, sCount, lFoot, lTop, idx, foot) ||
-        usedEverywhere(sHead, sTail, sCount, lFoot, lTop, idx, top)) {
-        generateLaddersRec(idx, need, total, sHead, sTail, sCount, lFoot, lTop, seed);
-        return;
+        sHead[i] = head;
+        sTail[i] = tail;
+        i++;
     }
-
-    lFoot[idx] = foot;
-    lTop[idx] = top;
-    generateLaddersRec(idx + 1, need, total, sHead, sTail, sCount, lFoot, lTop, seed);
 }
 
-/* =========================================================
-   Snake/Ladder check
-   ========================================================= */
+void generateLadders(int count, int total, int sHead[], int sTail[], int sCount, int lFoot[], int lTop[]) {
+    int i = 0;
+    while (i < count) {
+        int foot = rand() % (total - 2) + 1;             // [1 .. total-2]
+        int top  = rand() % (total - foot - 1) + foot + 1; // [foot+1 .. total-1]
+
+        if (top <= foot) continue;
+        if (usedEverywhere(sHead, sTail, sCount, lFoot, lTop, i, foot)) continue;
+        if (usedEverywhere(sHead, sTail, sCount, lFoot, lTop, i, top)) continue;
+
+        lFoot[i] = foot;
+        lTop[i] = top;
+        i++;
+    }
+}
+
+/* -------------------- Snake/Ladder lookup -------------------- */
 int snakeAt(int pos, int sHead[], int sTail[], int sCount) {
-    for (int i = 0; i < sCount; i++) if (sHead[i] == pos) return sTail[i];
+    for (int i = 0; i < sCount; i++) {
+        if (sHead[i] == pos) return sTail[i];
+    }
     return -1;
 }
 
 int ladderAt(int pos, int lFoot[], int lTop[], int lCount) {
-    for (int i = 0; i < lCount; i++) if (lFoot[i] == pos) return lTop[i];
+    for (int i = 0; i < lCount; i++) {
+        if (lFoot[i] == pos) return lTop[i];
+    }
     return -1;
 }
 
-/* =========================================================
-   Display board exactly by diagram numbering
-   (No snake/ladder drawing on board)
-   ========================================================= */
-void displayBoardDiagramStyle(int M, int N, int p1Pos, int p2Pos) {
+/* -------------------- Display board -------------------- */
+void displayBoard(int M, int N, int p1Pos, int p2Pos) {
     cout << "\n================ BOARD ================\n";
-    // print from top row to bottom row
+
+    // Print top row to bottom row so board looks natural
     for (int topR = M - 1; topR >= 0; topR--) {
         for (int c = 0; c < N; c++) {
             int cell = cellFromRowColBottomBased(topR, c, N);
@@ -146,20 +110,16 @@ void displayBoardDiagramStyle(int M, int N, int p1Pos, int p2Pos) {
     cout << "=======================================\n";
 }
 
-/* =========================================================
-   Apply one player's turn
-   ========================================================= */
+/* -------------------- Apply one player turn -------------------- */
 void applyTurn(
-    int playerNo,
-    int dice,
-    int total,
-    int &pos,
-    bool &started,
+    int playerNo, int dice, int total,
+    int &pos, bool &started,
     int sHead[], int sTail[], int sCount,
     int lFoot[], int lTop[], int lCount
 ) {
     cout << "Player " << playerNo << " rolled: " << dice << "\n";
 
+    // Player must roll 6 to enter
     if (!started) {
         if (dice == 6) {
             started = true;
@@ -172,82 +132,31 @@ void applyTurn(
     }
 
     int next = pos + dice;
-    if (next <= total) {
-        pos = next;
-    } else {
+
+    // If move goes beyond last cell, skip this move
+    if (next <= total) pos = next;
+    else {
         cout << "Player " << playerNo << " move skipped (beyond " << total << ").\n";
+        return;
     }
 
+    // Check snake first
     int t = snakeAt(pos, sHead, sTail, sCount);
     if (t != -1) {
-        cout << "Player " << playerNo << ": oops, snake got you!!! (" << pos << " -> " << t << ")\n";
+        cout << "Player " << playerNo << ": Oops! Snake (" << pos << " -> " << t << ")\n";
         pos = t;
         return;
     }
 
+    // Then check ladder
     int top = ladderAt(pos, lFoot, lTop, lCount);
     if (top != -1) {
-        cout << "Player " << playerNo << ": you got lucky (" << pos << " -> " << top << ")\n";
+        cout << "Player " << playerNo << ": Lucky! Ladder (" << pos << " -> " << top << ")\n";
         pos = top;
     }
 }
 
-/* =========================================================
-   Recursive gameplay (2 players)
-   Also prints iteration positions every turn
-   ========================================================= */
-void gameLoopRec(
-    int turnNo,        // 1,2,3...
-    int currentPlayer, // 1 or 2
-    int total, int M, int N,
-    int &p1Pos, int &p2Pos,
-    bool &p1Started, bool &p2Started,
-    int sHead[], int sTail[], int sCount,
-    int lFoot[], int lTop[], int lCount,
-    int &seed
-) {
-    if (p1Pos == total) {
-        cout << "\n🏆 Player 1 wins!\n";
-        return;
-    }
-    if (p2Pos == total) {
-        cout << "\n🏆 Player 2 wins!\n";
-        return;
-    }
-
-    cout << endl;
-    displayBoardDiagramStyle(M, N, p1Pos, p2Pos);
-
-    waitForEnter();
-    int dice = randInRange(seed, 1, 6);
-
-    if (currentPlayer == 1) {
-        applyTurn(1, dice, total, p1Pos, p1Started, sHead, sTail, sCount, lFoot, lTop, lCount);
-    } else {
-        applyTurn(2, dice, total, p2Pos, p2Started, sHead, sTail, sCount, lFoot, lTop, lCount);
-    }
-
-    // Required: tell positions each iteration
-    cout << "Position: P1=" << p1Pos << " , P2=" << p2Pos << "\n";
-
-    if (p1Pos == total) {
-        cout << "\n Player 1 wins!\n";
-        return;
-    }
-    if (p2Pos == total) {
-        cout << "\n Player 2 wins!\n";
-        return;
-    }
-
-    int nextPlayer = (currentPlayer == 1) ? 2 : 1;
-    gameLoopRec(turnNo + 1, nextPlayer, total, M, N,
-                p1Pos, p2Pos, p1Started, p2Started,
-                sHead, sTail, sCount, lFoot, lTop, lCount, seed);
-}
-
-/* =========================================================
-   Required controller
-   ========================================================= */
+/* -------------------- Main game controller -------------------- */
 void startSnakeGame() {
     int M, N;
     cout << "Enter board rows (M) and columns (N): ";
@@ -260,32 +169,54 @@ void startSnakeGame() {
     }
 
     int total = M * N;
-    int count = N - 1; // per your task statement
+    int count = N - 1;  // As required in your assignment logic
 
-    // Dynamic arrays
+    // Dynamic arrays for endpoints
     int *snakeHead = new int[count];
     int *snakeTail = new int[count];
     int *ladderFoot = new int[count];
     int *ladderTop = new int[count];
 
-    // pseudo-seed from inputs
-    int seed = M * 1009 + N * 917 + total * 101;
+    srand((unsigned)time(0)); // seed once
 
-    // generate snakes/ladders
-    generateSnakesRec(0, count, total, snakeHead, snakeTail, ladderFoot, ladderTop, 0, seed);
-    generateLaddersRec(0, count, total, snakeHead, snakeTail, count, ladderFoot, ladderTop, seed);
+    generateSnakes(count, total, snakeHead, snakeTail, ladderFoot, ladderTop, 0);
+    generateLadders(count, total, snakeHead, snakeTail, count, ladderFoot, ladderTop);
 
     int p1Pos = 0, p2Pos = 0;
     bool p1Started = false, p2Started = false;
+    int currentPlayer = 1;
 
     cout << "\n=== 2-Player Snake & Ladder Started ===\n";
     cout << "Rule: each player needs 6 to start.\n";
-    cout << "Board numbering follows diagram style.\n";
 
-    gameLoopRec(1, 1, total, M, N,
-                p1Pos, p2Pos, p1Started, p2Started,
-                snakeHead, snakeTail, count, ladderFoot, ladderTop, count, seed);
+    while (true) {
+        displayBoard(M, N, p1Pos, p2Pos);
 
+        waitForEnter();
+        int dice = rand() % 6 + 1;
+
+        if (currentPlayer == 1) {
+            applyTurn(1, dice, total, p1Pos, p1Started, snakeHead, snakeTail, count, ladderFoot, ladderTop, count);
+            currentPlayer = 2;
+        } else {
+            applyTurn(2, dice, total, p2Pos, p2Started, snakeHead, snakeTail, count, ladderFoot, ladderTop, count);
+            currentPlayer = 1;
+        }
+
+        // Show positions after every turn
+        cout << "Position: P1=" << p1Pos << " , P2=" << p2Pos << "\n";
+
+        if (p1Pos == total) {
+            cout << "\nPlayer 1 wins!\n";
+            break;
+        }
+        if (p2Pos == total) {
+            cout << "\nPlayer 2 wins!\n";
+            break;
+        }
+    }
+
+    // Clean up dynamic memory
     delete[] snakeHead;
     delete[] snakeTail;
     delete[] ladderFoot;
@@ -293,6 +224,6 @@ void startSnakeGame() {
 }
 
 int main() {
-    startSnakeGame();
+    startSnakeGame();   // main only calls one function
     return 0;
 }

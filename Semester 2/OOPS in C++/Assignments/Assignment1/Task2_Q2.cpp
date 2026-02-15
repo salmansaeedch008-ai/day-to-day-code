@@ -1,21 +1,35 @@
 #include <iostream>
 using namespace std;
 
-bool isVowel(char c) {
-    return (c=='a'||c=='e'||c=='i'||c=='o'||c=='u'||
-            c=='A'||c=='E'||c=='I'||c=='O'||c=='U');
-}
-
-// Prototype: int findVowels(char* str);
-int findVowels(char* str) {
+// task2_2
+int findVowels(char* str)
+{
+    // Base case: end of string
     if (*str == '\0') return 0;
-    return (isVowel(*str) ? 1 : 0) + findVowels(str + 1);
+
+    int vowelCount = 0;
+
+    // Check current character
+    if (*str == 'a' || *str == 'A' ||
+        *str == 'e' || *str == 'E' ||
+        *str == 'i' || *str == 'I' ||
+        *str == 'o' || *str == 'O' ||
+        *str == 'u' || *str == 'U') {
+        vowelCount = 1;
+    }
+
+    // Recursive call for next character
+    return vowelCount + findVowels(str + 1);
 }
 
 int main() {
-    char s[500];
-    cout << "Enter string:\n";
-    cin.getline(s, 500);
-    cout << "Vowels = " << findVowels(s) << "\n";
+    const int MAX = 1000;
+    char str[MAX];
+
+    cout << "Enter a string: ";
+    cin.getline(str, MAX);
+
+    cout << "Number of vowels: " << findVowels(str) << endl;
+
     return 0;
 }

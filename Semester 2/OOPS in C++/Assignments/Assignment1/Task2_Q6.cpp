@@ -1,58 +1,73 @@
 #include <iostream>
 using namespace std;
 
-int absVal(int x) { return (x < 0) ? -x : x; }
-
-void printLeftHalf(int j, int t, int pos) {
-    if (pos > j) return;
-
-    if (pos == 1) cout << "# ";
-    else {
-        int dots = j - t - 1;
-        int idx = pos - 1;
-        if (idx <= dots) cout << ". ";
-        else cout << "* ";
-    }
-
-    printLeftHalf(j, t, pos + 1);
+// Helper: prints single spaces recursively
+void printSpace(int spaces) {
+    if (spaces <= 0) return;
+    cout << " ";
+    printSpace(spaces - 1);
 }
 
-void printRightHalf(int j, int t, int pos) {
-    if (pos > j) return;
-
-    if (pos == j) cout << "#";
-    else {
-        int stars = t;
-        if (pos <= stars) cout << "* ";
-        else cout << ". ";
-    }
-
-    printRightHalf(j, t, pos + 1);
+// Helper: prints "# "
+void printHash() {
+    cout << "# ";
 }
 
-void printRows(int i, int j, int r) {
-    if (r > 2 * i - 1) return;
+// Helper: prints ". " recursively
+void printDash(int dashes) {
+    if (dashes <= 0) return;
+    cout << ". ";
+    printDash(dashes - 1);
+}
 
-    int t = i - 1 - absVal(i - r); // 0..i-1..0
+// Helper: prints "* * " recursively
+void printStar(int stars) {
+    if (stars <= 0) return;
+    cout << "* * ";
+    printStar(stars - 1);
+}
 
-    printLeftHalf(j, t, 1);
+// task2_6
+void PrintPattern2(int start, int end)
+{
+    if (end <= (start - end)) return;  // Base case
+
+    // Upper part
+    printSpace(end - (start - end));
+    printHash();
+    printDash(end - (start - end));
+    printStar(start - end);
     cout << "| ";
-    printRightHalf(j, t, 1);
-    cout << "\n";
+    printStar(start - end);
+    printDash(end - (start - end));
+    printHash();
+    cout << endl;
 
-    printRows(i, j, r + 1);
-}
+    PrintPattern2(start + 1, end);  // Recursive call
 
-// Prototype: void PrintPattern2(int i, int j);
-void PrintPattern2(int i, int j) {
-    if (i <= 0 || j <= 0) return;
-    printRows(i, j, 1);
+    // Lower part
+    if (start - 2 * end != -1) {
+        printSpace(end - (start - end));
+        printHash();
+        printDash(end - (start - end));
+        printStar(start - end);
+        cout << "| ";
+        printStar(start - end);
+        printDash(end - (start - end));
+        printHash();
+        cout << endl;
+    }
 }
 
 int main() {
-    int i, j;
-    cout << "Enter i and j: ";
-    cin >> i >> j;
-    PrintPattern2(i, j);
+    int start, end;
+
+    cout << "Enter start: ";
+    cin >> start;
+    cout << "Enter end: ";
+    cin >> end;
+
+    PrintPattern2(start, end);
+
     return 0;
 }
