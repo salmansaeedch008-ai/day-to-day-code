@@ -1,395 +1,334 @@
-// task2.cpp
 #include "Task2.h"
 
-// Default constructor
-String::String() {
-    data = nullptr;
-    size = 0;
+static int str_len(const char* s) {
+    if (s == nullptr) return 0;
+    int len = 0;
+    while (s[len] != '\0') {
+        len++;
+    }
+    return len;
 }
 
-// Constructor with C-string parameter
+String::String() {
+    size = 0;
+    data = new char[1];
+    data[0] = '\0';
+}
+
 String::String(char* str) {
-    // Calculate string length
-    int length = 0;
-    while (str[length] != '\0') {
-        length++;
-    }
-    
-    // Set size and allocate memory
-    size = length;
+    int len = str_len(str);
+    size = len;
     data = new char[size + 1];
-    
-    // Copy the string
     for (int i = 0; i < size; i++) {
         data[i] = str[i];
-    }
-    data[size] = '\0';  // Null terminator
-}
-
-// Copy constructor
-String::String(const String& str) {
-    size = str.size;
-    
-    // Allocate memory and copy the string
-    if (size > 0) {
-        data = new char[size + 1];
-        for (int i = 0; i < size; i++) {
-            data[i] = str.data[i];
-        }
-        data[size] = '\0';
-    } else {
-        data = nullptr;
-    }
-}
-
-// Constructor with preset size
-String::String(int x) {
-    size = x;
-    data = new char[size + 1];
-    
-    // Initialize with null characters
-    for (int i = 0; i < size; i++) {
-        data[i] = '\0';
     }
     data[size] = '\0';
 }
 
-// Destructor
-String::~String() {
-    if (data != nullptr) {
-        delete[] data;
+String::String(const char* str) {
+    int len = str_len(str);
+    size = len;
+    data = new char[size + 1];
+    for (int i = 0; i < size; i++) {
+        data[i] = str[i];
     }
+    data[size] = '\0';
 }
 
-// Return the string data
+String::String(const String& str) {
+    size = str.size;
+    data = new char[size + 1];
+    for (int i = 0; i < size; i++) {
+        data[i] = str.data[i];
+    }
+    data[size] = '\0';
+}
+
+String::String(int x) {
+    if (x < 0) x = 0;
+    data = new char[x + 1];
+    data[0] = '\0';
+    size = 0;
+}
+
+String::~String() {
+    delete[] data;
+}
+
+String& String::operator=(const String& other) {
+    if (this != &other) {
+        char* newData = new char[other.size + 1];
+        for (int i = 0; i < other.size; i++) {
+            newData[i] = other.data[i];
+        }
+        newData[other.size] = '\0';
+
+        delete[] data;
+        data = newData;
+        size = other.size;
+    }
+    return *this;
+}
+
 char* String::getdata() {
     return data;
 }
 
-// Get character at index
 char String::getChar(int i) const {
-    if (i >= 0 && i < size) {
-        return data[i];
+    if (i < 0 || i >= size) {
+        return '\0';
     }
-    return '\0';  // Return null character if index is out of bounds
+    return data[i];
 }
 
-// Append a String object
 String String::append_string(const String& str) {
-    // Calculate new size
     int newSize = size + str.size;
-    
-    // Create new string with combined size
     char* newData = new char[newSize + 1];
-    
-    // Copy current string
+
     for (int i = 0; i < size; i++) {
         newData[i] = data[i];
     }
-    
-    // Append the second string
     for (int i = 0; i < str.size; i++) {
         newData[size + i] = str.data[i];
     }
-    
-    newData[newSize] = '\0';  // Null terminator
-    
-    // Create and return new String object
-    String result;
-    result.size = newSize;
-    result.data = newData;
-    
-    return result;
+    newData[newSize] = '\0';
+
+    delete[] data;
+    data = newData;
+    size = newSize;
+
+    return *this;
 }
 
-// Append a character
 String String::append_string(const char& c) {
-    // Calculate new size
     int newSize = size + 1;
-    
-    // Create new string with increased size
     char* newData = new char[newSize + 1];
-    
-    // Copy current string
+
     for (int i = 0; i < size; i++) {
         newData[i] = data[i];
     }
-    
-    // Append the character
     newData[size] = c;
-    newData[newSize] = '\0';  // Null terminator
-    
-    // Create and return new String object
-    String result;
-    result.size = newSize;
-    result.data = newData;
-    
-    return result;
+    newData[newSize] = '\0';
+
+    delete[] data;
+    data = newData;
+    size = newSize;
+
+    return *this;
 }
 
-// Append a C-string
 String String::append_string(char* str) {
-    // Calculate string length
-    int strLen = 0;
-    while (str[strLen] != '\0') {
-        strLen++;
-    }
-    
-    // Calculate new size
-    int newSize = size + strLen;
-    
-    // Create new string with combined size
+    return append_string((const char*)str);
+}
+
+String String::append_string(const char* str) {
+    int len = str_len(str);
+    int newSize = size + len;
     char* newData = new char[newSize + 1];
-    
-    // Copy current string
+
     for (int i = 0; i < size; i++) {
         newData[i] = data[i];
     }
-    
-    // Append the second string
-    for (int i = 0; i < strLen; i++) {
+    for (int i = 0; i < len; i++) {
         newData[size + i] = str[i];
     }
-    
-    newData[newSize] = '\0';  // Null terminator
-    
-    // Create and return new String object
-    String result;
-    result.size = newSize;
-    result.data = newData;
-    
-    return result;
+    newData[newSize] = '\0';
+
+    delete[] data;
+    data = newData;
+    size = newSize;
+
+    return *this;
 }
 
-// Remove substring (String object)
+String String::append_string(string& str) {
+    return append_string(str.c_str());
+}
+
 String String::remove_string(const String& substr) {
-    // Create new string to store result
-    String result(*this);
-    
-    // Find the substring
-    int index = result.index_at(substr);
-    
-    // If substring is found
-    if (index != -1) {
-        // Calculate new size
-        int newSize = result.size - substr.size;
-        
-        // Create new string with reduced size
-        char* newData = new char[newSize + 1];
-        
-        // Copy characters before the substring
-        for (int i = 0; i < index; i++) {
-            newData[i] = result.data[i];
-        }
-        
-        // Copy characters after the substring
-        for (int i = index + substr.size; i < result.size; i++) {
-            newData[i - substr.size] = result.data[i];
-        }
-        
-        newData[newSize] = '\0';  // Null terminator
-        
-        // Clean up old data and set new data
-        delete[] result.data;
-        result.data = newData;
-        result.size = newSize;
+    int idx = index_at(substr);
+    if (idx == -1) {
+        return *this;
     }
-    
-    return result;
+
+    int newSize = size - substr.size;
+    char* newData = new char[newSize + 1];
+    int k = 0;
+
+    for (int i = 0; i < idx; i++) {
+        newData[k++] = data[i];
+    }
+    for (int i = idx + substr.size; i < size; i++) {
+        newData[k++] = data[i];
+    }
+    newData[k] = '\0';
+
+    delete[] data;
+    data = newData;
+    size = newSize;
+
+    return *this;
 }
 
-// Remove substring (C-string)
 String String::remove_string(const char* substr) {
-    // Calculate substring length
-    int substrLen = 0;
-    while (substr[substrLen] != '\0') {
-        substrLen++;
-    }
-    
-    // Create a temporary String object from the C-string
-    String tempSubstr;
-    tempSubstr.size = substrLen;
-    tempSubstr.data = new char[substrLen + 1];
-    
-    for (int i = 0; i < substrLen; i++) {
-        tempSubstr.data[i] = substr[i];
-    }
-    tempSubstr.data[substrLen] = '\0';
-    
-    // Use the String version of remove_string
-    String result = remove_string(tempSubstr);
-    
-    // Clean up temporary String
-    delete[] tempSubstr.data;
-    
-    return result;
+    String temp(substr);
+    return remove_string(temp);
 }
 
-// Assign from another String
-String String::assign_string(const String& str) {
-    // Clean up old data
-    if (data != nullptr) {
-        delete[] data;
+String String::remove_string(const string& substr) {
+    return remove_string(substr.c_str());
+}
+
+String String::remove_string(const char& ch) {
+    int idx = index_at(ch);
+    if (idx == -1) {
+        return *this;
     }
-    
-    // Set new size
-    size = str.size;
-    
-    // Allocate memory for new data
-    data = new char[size + 1];
-    
-    // Copy the string
+
+    int newSize = size - 1;
+    char* newData = new char[newSize + 1];
+    int k = 0;
+
     for (int i = 0; i < size; i++) {
-        data[i] = str.data[i];
+        if (i != idx) {
+            newData[k++] = data[i];
+        }
     }
-    data[size] = '\0';  // Null terminator
-    
+    newData[k] = '\0';
+
+    delete[] data;
+    data = newData;
+    size = newSize;
+
     return *this;
 }
 
-// Assign from a C-string
-String String::assign_string(char* str) {
-    // Calculate string length
-    int strLen = 0;
-    while (str[strLen] != '\0') {
-        strLen++;
-    }
-    
-    // Clean up old data
-    if (data != nullptr) {
+String& String::assign_string(const String& str) {
+    if (this != &str) {
+        char* newData = new char[str.size + 1];
+        for (int i = 0; i < str.size; i++) {
+            newData[i] = str.data[i];
+        }
+        newData[str.size] = '\0';
+
         delete[] data;
+        data = newData;
+        size = str.size;
     }
-    
-    // Set new size
-    size = strLen;
-    
-    // Allocate memory for new data
-    data = new char[size + 1];
-    
-    // Copy the string
-    for (int i = 0; i < size; i++) {
-        data[i] = str[i];
-    }
-    data[size] = '\0';  // Null terminator
-    
     return *this;
 }
 
-// Check if string is empty
+String& String::assign_string(char* str) {
+    return assign_string((const char*)str);
+}
+
+String& String::assign_string(const char* str) {
+    int len = str_len(str);
+    char* newData = new char[len + 1];
+
+    for (int i = 0; i < len; i++) {
+        newData[i] = str[i];
+    }
+    newData[len] = '\0';
+
+    delete[] data;
+    data = newData;
+    size = len;
+
+    return *this;
+}
+
+String& String::assign_string(const string& str) {
+    return assign_string(str.c_str());
+}
+
 bool String::isEmpty() const {
-    return (size == 0 || data == nullptr);
+    return size == 0;
 }
 
-// Compare with another String
 bool String::isEqual(const String& str) const {
-    // Check if sizes are different
     if (size != str.size) {
         return false;
     }
-    
-    // Compare character by character
     for (int i = 0; i < size; i++) {
         if (data[i] != str.data[i]) {
             return false;
         }
     }
-    
     return true;
 }
 
-// Compare with a C-string
 bool String::isEqual(const char* str) const {
-    // Calculate string length
-    int strLen = 0;
-    while (str[strLen] != '\0') {
-        strLen++;
-    }
-    
-    // Check if sizes are different
-    if (size != strLen) {
+    int len = str_len(str);
+    if (size != len) {
         return false;
     }
-    
-    // Compare character by character
     for (int i = 0; i < size; i++) {
         if (data[i] != str[i]) {
             return false;
         }
     }
-    
     return true;
 }
 
-// Find index of a character
+bool String::isEqual(const string& str) const {
+    return isEqual(str.c_str());
+}
+
 int String::index_at(char c) const {
     for (int i = 0; i < size; i++) {
         if (data[i] == c) {
             return i;
         }
     }
-    
-    return -1;  // Character not found
+    return -1;
 }
 
-// Find index of a substring (String object)
 int String::index_at(const String& str) const {
-    // If substring is empty or larger than this string
     if (str.size == 0 || str.size > size) {
         return -1;
     }
-    
-    // Search for the substring
+
     for (int i = 0; i <= size - str.size; i++) {
         bool found = true;
-        
         for (int j = 0; j < str.size; j++) {
             if (data[i + j] != str.data[j]) {
                 found = false;
                 break;
             }
         }
-        
         if (found) {
             return i;
         }
     }
-    
-    return -1;  // Substring not found
+    return -1;
 }
 
-// Find index of a substring (C-string)
 int String::index_at(const char* str) const {
-    // Calculate string length
-    int strLen = 0;
-    while (str[strLen] != '\0') {
-        strLen++;
-    }
-    
-    // If substring is empty or larger than this string
-    if (strLen == 0 || strLen > size) {
+    int len = str_len(str);
+    if (len == 0 || len > size) {
         return -1;
     }
-    
-    // Search for the substring
-    for (int i = 0; i <= size - strLen; i++) {
+
+    for (int i = 0; i <= size - len; i++) {
         bool found = true;
-        
-        for (int j = 0; j < strLen; j++) {
+        for (int j = 0; j < len; j++) {
             if (data[i + j] != str[j]) {
                 found = false;
                 break;
             }
         }
-        
         if (found) {
             return i;
         }
     }
-    
-    return -1;  // Substring not found
+    return -1;
 }
 
-// Get the length of the string
+int String::index_at(const string& str) const {
+    return index_at(str.c_str());
+}
+
 int String::length() const {
     return size;
 }
